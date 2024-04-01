@@ -24,5 +24,5 @@ srun torchrun --nnodes=2 \
     --max_restarts 0 \
     --tee 3 \
     --log_dir ./logs \
-    simple.py
+    primitives.py
  

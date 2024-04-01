@@ -13,6 +13,8 @@ module use /appl/local/csc/modulefiles
 module load pytorch
 
 export NCCL_DEBUG=INFO
+export TORCH_CPP_LOG_LEVEL=INFO
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
 MASTER_ADDR=`perl -le '$_=$ENV{"SLURM_JOB_NODELIST"}; s/,.*//; s/-.*//; s/\[//; print'`
 MASTER_PORT=6777
@@ -25,5 +27,5 @@ srun torchrun --nnodes=2 \
     --max_restarts 0 \
     --tee 3 \
     --log_dir ./logs \
-    simple.py
+    primitives.py
  
