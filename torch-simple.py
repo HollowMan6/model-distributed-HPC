@@ -6,11 +6,9 @@ from time import sleep
 import torch
 import torch.distributed as dist
 import torch.nn as nn
-import torch.optim as optim
-import datetime
-
 
 from torch.nn.parallel import DistributedDataParallel as DDP
+
 
 class ToyModel(nn.Module):
     def __init__(self):
@@ -28,7 +26,8 @@ def train():
     rank = int(os.environ["RANK"])
     epoch = 20
     for i in range(epoch):
-        print(f"[{os.getpid()}] (rank = {rank}, local_rank = {local_rank}) training...")
+        print(f"[{os.getpid()}] (rank = {
+              rank}, local_rank = {local_rank}) training...")
         model = ToyModel().cuda(local_rank)
         ddp_model = DDP(model, [local_rank])
 
@@ -39,15 +38,17 @@ def train():
         labels = torch.randn(20, 5).to(local_rank)
         loss = loss_fn(outputs, labels)
         loss.backward()
-        print(f"[{os.getpid()}] (rank = {rank}, local_rank = {local_rank}) loss = {loss.item()}\n")
+        print(f"[{os.getpid()}] (rank = {rank}, local_rank = {
+              local_rank}) loss = {loss.item()}\n")
         optimizer.step()
         sleep(1)
 
+
 if __name__ == "__main__":
     env_dict = {
-            key: os.environ[key]
-            for key in ("MASTER_ADDR", "MASTER_PORT", "WORLD_SIZE", "LOCAL_WORLD_SIZE")
-        }
+        key: os.environ[key]
+        for key in ("MASTER_ADDR", "MASTER_PORT", "WORLD_SIZE", "LOCAL_WORLD_SIZE")
+    }
     print(f"[{os.getpid()}] Initializing process group with: {env_dict}")
     dist.init_process_group(backend="nccl")
     train()

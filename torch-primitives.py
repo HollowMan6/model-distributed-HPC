@@ -61,7 +61,8 @@ def run():
     tensor = torch.arange(2, dtype=torch.int64) + 1 + 2 * rank
     print("before gather", " Rank ", rank, " has data ", tensor)
     # create an empty list we will use to hold the gathered values
-    gather_list = [torch.zeros(2, dtype=torch.int64) for _ in range(world_size)]
+    gather_list = [torch.zeros(2, dtype=torch.int64)
+                   for _ in range(world_size)]
     dist.all_gather(gather_list, tensor)
     print("after gather", " Rank ", rank, " has data ", tensor)
     print("after gather", " Rank ", rank, " has gather list ", gather_list)
@@ -70,7 +71,8 @@ def run():
     tensor = torch.arange(2, dtype=torch.int64) + 1 + 2 * rank
     print("before gather", " Rank ", rank, " has data ", tensor)
     if rank == 0:
-        gather_list = [torch.zeros(2, dtype=torch.int64) for _ in range(world_size)]
+        gather_list = [torch.zeros(2, dtype=torch.int64)
+                       for _ in range(world_size)]
         dist.gather(tensor, dst=0, gather_list=gather_list)
         print("after gather", " Rank ", rank, " has data ", tensor)
         print("gather_list:", gather_list)
@@ -101,15 +103,16 @@ def run():
     input = torch.arange(world_size) + rank * world_size
     input = list(input.chunk(world_size))
     print("before all_to_all", " Rank ", rank, " has input ", input)
-    output = list(torch.empty([world_size], dtype=torch.int64).chunk(world_size))
+    output = list(torch.empty(
+        [world_size], dtype=torch.int64).chunk(world_size))
     # Scatters list of input tensors to all processes in a group and
     # return gathered list of tensors in output list.
     dist.all_to_all(output, input)
     # Same as:
-    ## scatter_list = input
-    ## gather_list  = output
-    ## for i in range(world_size):
-    ##     dist.scatter(gather_list[i], scatter_list if i == rank else [], src=i)
+    # scatter_list = input
+    # gather_list  = output
+    # for i in range(world_size):
+    # dist.scatter(gather_list[i], scatter_list if i == rank else [], src=i)
     print("after all_to_all", " Rank ", rank, " has output ", output)
     print("Rank ", rank, " finished")
 
