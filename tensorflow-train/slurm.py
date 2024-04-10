@@ -19,6 +19,7 @@ def tf_config_from_slurm(ps_number, port_number=2222):
     
     nodelist = os.environ["SLURM_JOB_NODELIST"]
     nodename = os.environ["SLURMD_NODENAME"]
+    print(nodelist, nodename)
     nodelist = _expand_nodelist(nodelist)
     num_nodes = int(os.getenv("SLURM_JOB_NUM_NODES"))
     
@@ -66,7 +67,10 @@ def _expand_ids(ids):
     return result
 
 def _expand_nodelist(nodelist):
-    prefix, ids = re.findall("(.*)\[(.*)\]", nodelist)[0]
-    ids = _expand_ids(ids)
-    result = [prefix + str(id) for id in ids]
-    return result
+    expr = re.findall("(.*)\[(.*)\]", nodelist)
+    if len(expr) > 0:
+        prefix, ids = re.findall("(.*)\[(.*)\]", nodelist)[0]
+        ids = _expand_ids(ids)
+        result = [prefix + str(id) for id in ids]
+        return result
+    return nodelist.split(',')
